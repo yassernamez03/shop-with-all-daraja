@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { ShoppingCart, Volume2, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingCart, Volume2, Star, Wand2 } from 'lucide-react';
 
 interface Product {
   id: number;
@@ -18,12 +18,33 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, highContrast }) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [currentImage, setCurrentImage] = useState(product.image);
+  
   const playAudioDescription = () => {
     const utterance = new SpeechSynthesisUtterance(
       `${product.name}. السعر ${product.price}. التقييم ${product.rating} من 5 نجوم. ${product.description}`
     );
     utterance.lang = 'ar-MA';
     speechSynthesis.speak(utterance);
+  };
+  
+  const generateAIImage = async () => {
+    setIsGenerating(true);
+    
+    try {
+      const productName = product.name.split('/')[1]?.trim() || product.name;
+      
+      // Generate a new image URL based on the product name
+      const imageUrl = `https://source.unsplash.com/random/300x200/?${encodeURIComponent(productName)}`;
+      
+      // Update the current image
+      setCurrentImage(imageUrl);
+    } catch (error) {
+      console.error("Error generating AI image:", error);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -39,7 +60,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, highContrast 
       {/* Product Image */}
       <div className="relative">
         <img 
-          src={product.image} 
+          src={currentImage} 
           alt={`صورة المنتج: ${product.name}`}
           className="w-full h-48 object-cover"
           loading="lazy"
@@ -65,6 +86,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, highContrast 
           aria-label={`تشغيل الوصف الصوتي لـ ${product.name} / Play audio description`}
         >
           <Volume2 size={16} />
+        </button>
+        
+        {/* AI Image Generation Button */}
+        <button
+          onClick={generateAIImage}
+          disabled={isGenerating}
+          className={`absolute bottom-2 left-2 p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+            highContrast
+              ? 'bg-gray-700 text-white hover:bg-gray-600 focus:ring-yellow-400'
+              : 'bg-white text-gray-700 hover:bg-gray-100 focus:ring-blue-500'
+          }`}
+          aria-label={`توليد صورة بالذكاء الاصطناعي لـ ${product.name} / Generate AI image`}
+        >
+          <Wand2 size={16} className={isGenerating ? 'animate-spin' : ''} />
         </button>
       </div>
 
