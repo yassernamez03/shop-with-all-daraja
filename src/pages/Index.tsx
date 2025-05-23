@@ -5,12 +5,14 @@ import { SearchBar } from '../components/SearchBar';
 import { ProductGrid } from '../components/ProductGrid';
 import { AccessibilityPanel } from '../components/AccessibilityPanel';
 import { VoiceAssistant } from '../components/VoiceAssistant';
+import { AIAssistant } from '../components/AIAssistant';
 import { useAccessibility } from '../hooks/useAccessibility';
 
 const Index = () => {
   const { highContrast, fontSize, toggleHighContrast, increaseFontSize, decreaseFontSize } = useAccessibility();
   const [searchQuery, setSearchQuery] = useState('');
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
+  const [isAIEnabled, setIsAIEnabled] = useState(false);
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
@@ -81,12 +83,17 @@ const Index = () => {
         toggleHighContrast={toggleHighContrast}
         increaseFontSize={increaseFontSize}
         decreaseFontSize={decreaseFontSize}
-      />
-
-      {/* Voice Assistant */}
+      />      {/* Voice Assistant */}
       <VoiceAssistant 
         isEnabled={isVoiceEnabled}
         setIsEnabled={setIsVoiceEnabled}
+        highContrast={highContrast}
+      />
+
+      {/* AI Assistant */}
+      <AIAssistant
+        isEnabled={isAIEnabled}
+        setIsEnabled={setIsAIEnabled}
         highContrast={highContrast}
       />
     </div>
